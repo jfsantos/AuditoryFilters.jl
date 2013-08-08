@@ -1,5 +1,4 @@
 module auditory
-
 export hilbert
 
 function hilbert(x)
@@ -17,3 +16,5 @@ function hilbert(x)
     end
     return ifft(X.*h)
 end
+
+end #module
