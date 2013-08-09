@@ -1,5 +1,5 @@
 module auditory
-export hilbert, erb_space, make_erb_filterbank, cochlear_filterbank
+export hilbert, erb_space, make_erb_filterbank, erb_filterbank, compute_modulation_cfs, make_modulation_filter, modulation_filterbank
 
 function hilbert(x)
 # Return the Hilbert transform of x.
@@ -17,7 +17,7 @@ function hilbert(x)
     return ifft(X.*h)
 end
 
-function cochlear_filterbank(x, fcoefs)
+function erb_filterbank(x, fcoefs)
     A0  = fcoefs[:,1]
     A11 = fcoefs[:,2]
     A12 = fcoefs[:,3]
@@ -77,7 +77,7 @@ function make_erb_filterbank(fs, num_channels, low_freq, EarQ = 9.26449, minBW =
       2*exp(4*im*cf*pi*T) + 2*(1 + exp(4*im*cf*pi*T))./exp(B*T)).^4)
     
     allfilts = ones(length(cf),1);
-    return [A0*allfilts A11 A12 A13 A14 A2*allfilts B0*allfilts B1 B2 gain];
+    return [A0*allfilts A11 A12 A13 A14 A2*allfilts B0*allfilts B1 B2 gain], ERB;
 end
 
 function erb_space(low_freq, high_freq, num_channels, EarQ = 9.26449, minBW = 24.7, order = 1)
@@ -85,7 +85,37 @@ function erb_space(low_freq, high_freq, num_channels, EarQ = 9.26449, minBW = 24
     # Efficient Implementation of the Patterson-Holdsworth Cochlear
     # Filter Bank."  See pages 33-34.
     cfArray = -(EarQ*minBW) + exp([1:num_channels]*(-log(high_freq + EarQ*minBW) + log(low_freq + EarQ*minBW))/num_channels) * (high_freq + EarQ*minBW)
+end
 
+function make_modulation_filter(w0, Q)
+    W0 = tan(w0/2)
+    B0 = W0/Q
+    b = [B0, 0, -B0]
+    a = [(1 + B0 + W0^2), (2*W0^2 - 2), (1 - B0 + W0^2)]
+    b = b/a[1]
+    a = a/a[1]
+    return b, a
+end
+
+function modulation_filterbank(x, mf, fs, q)
+    N = length(mf)
+    out = zeros(N, length(x))
+    for k=1:N
+        w0 = 2*pi*mf[k]/fs
+        (b3,a3) = make_modulation_filter(w0,q)
+        out[k,:] = filt(b3, a3, x)
+    end
+    return out
+end
+
+function compute_modulation_cfs(min_cf, max_cf, n)
+    spacing_factor = (max_cf/min_cf)^(1/(n-1))
+    cfs = zeros(n)
+    cfs[1] = min_cf
+    for k=2:n
+        cfs[k] = cfs[k-1]*spacing_factor
+    end
+    return cfs
 end
 
 end #module
