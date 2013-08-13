@@ -1,10 +1,10 @@
 module auditory
 export hilbert, erb_space, make_erb_filterbank, erb_filterbank, compute_modulation_cfs, make_modulation_filter, modulation_filterbank
 
-function hilbert(x)
-# Return the Hilbert transform of x.
+function hilbert(x::Array{Float64})
+# Return the Hilbert transform of x (a real signal).
 # Code inspired by Scipy's implementation, which is under BSD license.
-    X = fft(x)
+    X = vcat(rfft(x), zeros(int(floor(length(x)/2))-1))
     N = length(X)
     h = zeros(N)
     if N % 2 == 0
@@ -29,7 +29,7 @@ function erb_filterbank(x, fcoefs)
     B2  = fcoefs[:,9]
     gain= fcoefs[:,10]	
 
-    output = zeros(size(gain,1), length(x))
+    output = zeros(length(x), size(gain,1))
     
     for chan = 1:size(gain,1)
 
@@ -37,7 +37,7 @@ function erb_filterbank(x, fcoefs)
 	y2=filt([A0[chan], A12[chan], A2[chan]], [B0[chan], B1[chan], B2[chan]], y1)
 	y3=filt([A0[chan], A13[chan], A2[chan]], [B0[chan], B1[chan], B2[chan]], y2)
 	y4=filt([A0[chan], A14[chan], A2[chan]], [B0[chan], B1[chan], B2[chan]], y3)
-	output[chan, :] = y4
+	output[:, chan] = y4
     end
     return output
 end
@@ -99,11 +99,11 @@ end
 
 function modulation_filterbank(x, mf, fs, q)
     N = length(mf)
-    out = zeros(N, length(x))
+    out = zeros(length(x),N)
     for k=1:N
         w0 = 2*pi*mf[k]/fs
         (b3,a3) = make_modulation_filter(w0,q)
-        out[k,:] = filt(b3, a3, x)
+        out[:,k] = filt(b3, a3, x)
     end
     return out
 end
