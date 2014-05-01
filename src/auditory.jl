@@ -1,21 +1,7 @@
-module auditory
-export hilbert, erb_space, make_erb_filterbank, erb_filterbank, compute_modulation_cfs, make_modulation_filter, modulation_filterbank
-
-function hilbert(x::Array{Float64})
-# Return the Hilbert transform of x (a real signal).
-# Code inspired by Scipy's implementation, which is under BSD license.
-    X = vcat(rfft(x), zeros(int(floor(length(x)/2))-1))
-    N = length(X)
-    h = zeros(N)
-    if N % 2 == 0
-        h[1] = h[N/2+1] = 1
-        h[2:N/2] = 2
-    else
-        h[1] = 1
-        h[2:(N+1)/2+1] = 2
-    end
-    return ifft(X.*h)
-end
+module Auditory
+import DSP: Filter, TFFilter, BiquadFilter, SOSFilter, filt
+import Base: convert
+export erb_space, make_erb_filterbank, erb_filterbank, compute_modulation_cfs, make_modulation_filter, modulation_filterbank
 
 function erb_filterbank(x, fcoefs)
     A0  = fcoefs[:,1]
@@ -92,20 +78,11 @@ function make_modulation_filter(w0, Q)
     B0 = W0/Q
     b = [B0, 0, -B0]
     a = [(1 + B0 + W0^2), (2*W0^2 - 2), (1 - B0 + W0^2)]
-    b = b/a[1]
-    a = a/a[1]
-    return b, a
+    BiquadFilter(b[1], b[2], b[3], a[1], a[2], a[3])
 end
 
-function modulation_filterbank(x, mf, fs, q)
-    N = length(mf)
-    out = zeros(length(x),N)
-    for k=1:N
-        w0 = 2*pi*mf[k]/fs
-        (b3,a3) = make_modulation_filter(w0,q)
-        out[:,k] = filt(b3, a3, x)
-    end
-    return out
+function modulation_filterbank(mf, fs, q)
+    [make_modulation_filter(w0, q) for w0 in 2*pi*mf/fs]
 end
 
 function compute_modulation_cfs(min_cf, max_cf, n)
