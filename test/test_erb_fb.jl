@@ -1,4 +1,4 @@
-using auditory, MATLAB
+using Auditory, MATLAB, Base.Test
 
 # testing auditory filterbank design
 
@@ -7,26 +7,20 @@ restart_default_msession()
 fb = make_erb_filterbank(16000, 23, 150)
 
 @matlab begin
-    addpath("/home/jfsantos/Documents/MATLAB/auditory")
+    addpath("/Users/jfsantos/Projects/SRMR_toolbox/auditory")
     fb_matlab = MakeERBFilters(16000, 23, 150)
 end
 
 @mget fb_matlab
 
-# if max(abs(fb_matlab-fb)) < 1E-10
-#     println("Implementation results under specified tolerance.")
-# else
-#     println("ERROR: Julia implementation not under specified tolerance.")
-# end
-
-# close_default_msession()
-
-t = [1:32000]
-x = sin(2*pi*440*t)
-y = erb_filterbank(x, fb)
+x = zeros(1000)
+x[1] = 1.0
+y = filt(fb, x)
 
 @mput x
 @matlab y_matlab = ERBFilterBank(x, fb_matlab)
 @mget y_matlab
 
-sum(abs((y-y_matlab).^2))
+close_default_msession()
+
+@test_approx_eq y y_matlab'
