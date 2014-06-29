@@ -7,8 +7,8 @@ restart_default_msession()
 fb = make_erb_filterbank(16000, 23, 150)
 
 @matlab begin
-    addpath("/Users/jfsantos/Projects/SRMR_toolbox/auditory")
-    fb_matlab = MakeERBFilters(16000, 23, 150)
+    addpath("/Users/jfsantos/Projects/SRMR_toolbox/auditory");
+    fb_matlab = MakeERBFilters(16000, 23, 150);
 end
 
 @mget fb_matlab
