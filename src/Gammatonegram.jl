@@ -9,8 +9,8 @@ function gammatonegram(x,sr::Integer,twin::Real,thop::Real,N::Integer,fmin,fmax,
     nwin = iround(twin*sr)
     (W,F) = fft2gammatonemx(nfft, sr, N, width, fmin, fmax)
     # perform FFT and weighting in amplitude domain
-	S = spectrogram(x, nwin, nwin-nhop; nfft=nfft, fs=sr)
-	Y = 1/nfft*W*sqrt(S.power)
+	S = stft(x, nwin, nwin-nhop; nfft=nfft, fs=sr, window=hanning)
+	Y = 1/nfft*W*abs(S)
 	Y, F
 end
 
