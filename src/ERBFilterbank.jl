@@ -1,7 +1,11 @@
-immutable ERBFilterbank{C,G,T}
+immutable ERBFilterbank{C,G,T<:Real,U<:Real,V<:Real}
 	filters::Vector{SOSFilter{C,G}}
 	ERB::Vector{T}
+  center_frequencies::Vector{U}
+  fs::V
 end
+
+nchannels(F::ERBFilterbank) = length(F.filters)
 
 function filt(fb::ERBFilterbank, x)
 	output = zeros(length(x), length(fb.filters))
@@ -45,7 +49,7 @@ function make_erb_filterbank(fs, num_channels, low_freq, EarQ = 9.26449, minBW =
       2^(3/2))*sin(2*cf*pi*T))) ./ (-2 ./ exp(2*B*T) -
       2*exp(4*im*cf*pi*T) + 2*(1 + exp(4*im*cf*pi*T))./exp(B*T)).^4)	
 	
-	C = typeof(B0)
+  C = typeof(B0)
 	filters = Array(SOSFilter{C,C}, num_channels)
 	for ch=1:num_channels
 		biquads = Array(BiquadFilter{C}, 4)
@@ -55,7 +59,7 @@ function make_erb_filterbank(fs, num_channels, low_freq, EarQ = 9.26449, minBW =
 		biquads[4] = BiquadFilter(B0, B14[ch], B2, A0, A1[ch], A2[ch])
 		filters[ch] = SOSFilter(biquads, 1/gain[ch])
 	end
-	ERBFilterbank(filters, ERB)
+	ERBFilterbank(filters, ERB, cf, fs)
 end
 
 function erb_space(low_freq, high_freq, num_channels, EarQ = 9.26449, minBW = 24.7, order = 1)

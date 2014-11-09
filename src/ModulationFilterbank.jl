@@ -1,6 +1,10 @@
-immutable ModulationFilterbank{T<:Filter}
-	filters::Vector{T}
+immutable ModulationFilterbank{F<:Filter,T<:Real,U<:Real}
+	filters::Vector{F}
+	center_frequencies::Vector{T}
+	fs::U
 end
+
+nchannels(F::ModulationFilterbank) = length(F.filters)
 
 function filt(fb::ModulationFilterbank, x)
 	output = zeros(length(x), length(fb.filters))
@@ -21,7 +25,7 @@ function make_modulation_filter(w0, Q)
 end
 
 function modulation_filterbank(mf, fs, q)
-    ModulationFilterbank([make_modulation_filter(w0, q) for w0 in 2*pi*mf/fs])
+    ModulationFilterbank([make_modulation_filter(w0, q) for w0 in 2*pi*mf/fs], mf, fs)
 end
 
 function compute_modulation_cfs(min_cf, max_cf, n)
