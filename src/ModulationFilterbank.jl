@@ -1,5 +1,5 @@
-immutable ModulationFilterbank{T}
-	filters::Vector{BiquadFilter{T}}
+immutable ModulationFilterbank{T<:Filter}
+	filters::Vector{T}
 end
 
 function filt(fb::ModulationFilterbank, x)
