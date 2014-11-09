@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/jfsantos/AuditoryFilters.jl.svg?branch=master)](https://travis-ci.org/jfsantos/AuditoryFilters.jl)
-[![Coverage Status](https://coveralls.io/repos/jfsantos/AuditoryFilters.jl/badge.png?branch=master)](https://coveralls.io/r/jfsantos/AuditoryFilters.jl?branch=master)
+[![Coverage Status](https://coveralls.io/repos/jfsantos/AuditoryFilters.jl/badge.png)](https://coveralls.io/r/jfsantos/AuditoryFilters.jl)
+
 
 This package provides auditory filter implementations in Julia. The following implementations are available:
 
