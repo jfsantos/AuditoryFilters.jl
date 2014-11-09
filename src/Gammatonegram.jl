@@ -3,6 +3,12 @@
 # D. P. W. Ellis (2009). "Gammatone-like spectrograms", web resource.
 # http://www.ee.columbia.edu/~dpwe/resources/matlab/gammatonegram/
 
+type Gammatonegram{T, F<:Real} <: DSP.Periodograms.TFR{T}
+	amplitude::Matrix{T}
+	frequencies::Vector{F}
+	time::FloatRange{Float64}
+end
+
 function gammatonegram(x,sr::Integer,twin::Real,thop::Real,N::Integer,fmin,fmax,width)
 	nfft = int(2^(ceil(log(2*twin*sr)/log(2))))
     nhop = iround(thop*sr)
@@ -11,7 +17,7 @@ function gammatonegram(x,sr::Integer,twin::Real,thop::Real,N::Integer,fmin,fmax,
     # perform FFT and weighting in amplitude domain
 	S = stft(x, nwin, nwin-nhop; nfft=nfft, fs=sr, window=hanning)
 	Y = 1/nfft*W*abs(S)
-	Y, F
+	Gammatonegram(Y, vec(F), ((0:size(Y,2)-1)*(nhop)+nwin/2)/sr)
 end
 
 function fft2gammatonemx(nfft::Integer, sr::Integer, N::Integer, width, fmin, fmax)
