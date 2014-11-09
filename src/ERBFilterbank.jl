@@ -1,18 +1,8 @@
-immutable ERBFilterbank{C,G,T<:Real,U<:Real,V<:Real}
+immutable ERBFilterbank{C,G,T<:Real,U<:Real,V<:Real} <: Filterbank
 	filters::Vector{SOSFilter{C,G}}
 	ERB::Vector{T}
   center_frequencies::Vector{U}
   fs::V
-end
-
-nchannels(F::ERBFilterbank) = length(F.filters)
-
-function filt(fb::ERBFilterbank, x)
-	output = zeros(length(x), length(fb.filters))
-	for k = 1:length(fb.filters)
-		output[:, k] = filt(fb.filters[k], x)
-	end
-	return output
 end
 
 function make_erb_filterbank(fs, num_channels, low_freq, EarQ = 9.26449, minBW = 24.7, order = 1)
