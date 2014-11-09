@@ -1,8 +1,7 @@
-using Auditory, DSP, Base.Test
-
+# Testing gammatonegram response
 s = read(open(joinpath(dirname(@__FILE__), "data", "sa2.raw")), Float64, 42701)
 fs = 16000
-(W, _) = Auditory.fft2gammatonemx(512, fs, 23, 1, 150, 4000)
+(W, _) = AuditoryFilters.fft2gammatonemx(512, fs, 23, 1, 150, 4000)
 G = gammatonegram(s, fs, 0.025, 0.010, 23, 150, 4000, 1)
 
 G_matlab = readcsv(open(joinpath(dirname(@__FILE__), "data", "G_matlab.csv")))

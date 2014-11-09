@@ -1,5 +1,3 @@
-using Auditory, DSP, Base.Test
-
 # testing ERB filterbank design
 fb = make_erb_filterbank(16000, 23, 150)
 fb_matlab = readcsv(open(joinpath(dirname(@__FILE__), "data", "ERB_filter_coeffs.csv")))

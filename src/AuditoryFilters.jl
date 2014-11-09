@@ -1,4 +1,4 @@
-module Auditory
+module AuditoryFilters
 
 using DSP
 import Base: convert, filt
