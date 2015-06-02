@@ -1,5 +1,5 @@
 immutable ERBFilterbank{C,G,T<:Real,U<:Real,V<:Real} <: Filterbank
-	filters::Vector{SOSFilter{C,G}}
+	filters::Vector{SecondOrderSections{C,G}}
 	ERB::Vector{T}
   center_frequencies::Vector{U}
   fs::V
@@ -37,8 +37,8 @@ function make_erb_filterbank(fs, num_channels, low_freq, EarQ = 9.26449, minBW =
       2^(3/2))*sin(2*cf*pi*T))) .* (-2*exp(4*im*cf*pi*T)*T +
       2*exp(-(B*T) + 2*im*cf*pi*T).*T.* (cos(2*cf*pi*T) + sqrt(3 +
       2^(3/2))*sin(2*cf*pi*T))) ./ (-2 ./ exp(2*B*T) -
-      2*exp(4*im*cf*pi*T) + 2*(1 + exp(4*im*cf*pi*T))./exp(B*T)).^4)	
-	
+      2*exp(4*im*cf*pi*T) + 2*(1 + exp(4*im*cf*pi*T))./exp(B*T)).^4)
+
   C = typeof(B0)
 	filters = Array(SOSFilter{C,C}, num_channels)
 	for ch=1:num_channels
