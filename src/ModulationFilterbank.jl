@@ -1,7 +1,7 @@
 immutable ModulationFilterbank{F<:FilterCoefficients,T<:Real,U<:Real} <: Filterbank
-	filters::Vector{F}
-	center_frequencies::Vector{T}
-	fs::U
+    filters::Vector{F}
+    center_frequencies::Vector{T}
+    fs::U
 end
 
 function make_modulation_filter(w0, Q)
