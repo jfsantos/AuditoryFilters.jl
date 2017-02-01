@@ -10,7 +10,7 @@ type Gammatonegram{T, F<:Real} <: DSP.Periodograms.TFR{T}
 end
 
 function gammatonegram(x,sr::Integer,twin::Real,thop::Real,N::Integer,fmin,fmax,width)
-    nfft = round(Integer, 2^(ceil(log(2*twin*sr)/log(2))))
+    nfft = floor(Integer, 2^(ceil(log(2*twin*sr)/log(2))))
     nhop = iround(thop*sr)
     nwin = iround(twin*sr)
     (W,F) = fft2gammatonemx(nfft, sr, N, width, fmin, fmax)
@@ -22,7 +22,7 @@ end
 
 function fft2gammatonemx(nfft::Integer, sr::Integer, N::Integer, width, fmin, fmax)
     # Allocating matrix to store the filterbank weights
-    W = zeros(N, round(Integer, nfft/2+1));
+    W = zeros(N, floor(Integer, nfft/2+1));
     # Gammatone filterbank constants
     EarQ = 9.26449
     minBW = 24.7
