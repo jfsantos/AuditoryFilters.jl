@@ -6,7 +6,7 @@ import Base: convert, filt
 export erb_space, make_erb_filterbank, erb_filterbank, compute_modulation_cfs, make_modulation_filter, modulation_filterbank, gammatonegram,
        ERBFilterbank, ModulationFilterbank
 
-abstract Filterbank
+abstract type Filterbank end
 
 nchannels(f::Filterbank) = length(f.filters)
 
