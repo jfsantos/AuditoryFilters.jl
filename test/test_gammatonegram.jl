@@ -8,6 +8,6 @@ G_matlab = readcsv(open(joinpath(dirname(@__FILE__), "data", "G_matlab.csv")))
 F_matlab = readcsv(open(joinpath(dirname(@__FILE__), "data", "F_matlab.csv")))
 W_matlab = readcsv(open(joinpath(dirname(@__FILE__), "data", "W_matlab.csv")))
 
-@test_approx_eq W W_matlab
-@test_approx_eq G.frequencies F_matlab'
-@test_approx_eq G.amplitude G_matlab
+@test W ≈ W_matlab
+@test G.frequencies ≈ F_matlab
+@test G.amplitude ≈ G_matlab
