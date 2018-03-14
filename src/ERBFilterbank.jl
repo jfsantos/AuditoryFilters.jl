@@ -1,4 +1,4 @@
-immutable ERBFilterbank{C,G,T<:Real,U<:Real,V<:Real} <: Filterbank
+struct ERBFilterbank{C,G,T<:Real,U<:Real,V<:Real} <: Filterbank
     filters::Vector{SecondOrderSections{C,G}}
     ERB::Vector{T}
     center_frequencies::Vector{U}
@@ -23,26 +23,26 @@ function make_erb_filterbank(fs, num_channels, low_freq, EarQ = 9.26449, minBW =
     A1 = -2*cos.(2*cf*pi*T)./exp.(B*T)
     A2 = exp.(-2*B*T)
 
-    B11 = -(2*T*cos.(2*cf*pi*T)./exp.(B*T) .+ 2*sqrt(3+2^1.5)*T*sin.(2*cf*pi*T)./exp.(B*T))/2
-    B12 = -(2*T*cos.(2*cf*pi*T)./exp.(B*T) .- 2*sqrt(3+2^1.5)*T*sin.(2*cf*pi*T)./exp.(B*T))/2
-    B13 = -(2*T*cos.(2*cf*pi*T)./exp.(B*T) .+ 2*sqrt(3-2^1.5)*T*sin.(2*cf*pi*T)./exp.(B*T))/2
-    B14 = -(2*T*cos.(2*cf*pi*T)./exp.(B*T) .- 2*sqrt(3-2^1.5)*T*sin.(2*cf*pi*T)./exp.(B*T))/2
+    B11 = @. -(2*T*cos(2*cf*pi*T)/exp(B*T) + 2*sqrt(3+2^1.5)*T*sin(2*cf*pi*T)/exp(B*T))/2
+    B12 = @. -(2*T*cos(2*cf*pi*T)/exp(B*T) - 2*sqrt(3+2^1.5)*T*sin(2*cf*pi*T)/exp(B*T))/2
+    B13 = @. -(2*T*cos(2*cf*pi*T)/exp(B*T) + 2*sqrt(3-2^1.5)*T*sin(2*cf*pi*T)/exp(B*T))/2
+    B14 = @. -(2*T*cos(2*cf*pi*T)/exp(B*T) - 2*sqrt(3-2^1.5)*T*sin(2*cf*pi*T)/exp(B*T))/2
 
-    gain = abs.((-2*exp.(4*im*cf*pi*T)*T + 2*exp.(-(B*T) +
-      2*im*cf*pi*T).*T.*(cos.(2*cf*pi*T) - sqrt(3 - 2^(3/2))*
-      sin.(2*cf*pi*T))) .* (-2*exp.(4*im*cf*pi*T)*T + 2*exp.(-(B*T) +
-      2*im*cf*pi*T).*T.* (cos.(2*cf*pi*T) + sqrt(3 - 2^(3/2)) *
-      sin.(2*cf*pi*T))).* (-2*exp.(4*im*cf*pi*T)*T + 2*exp.(-(B*T) +
-      2*im*cf*pi*T).*T.* (cos.(2*cf*pi*T) - sqrt(3 +
-      2^(3/2))*sin.(2*cf*pi*T))) .* (-2*exp.(4*im*cf*pi*T)*T +
-      2*exp.(-(B*T) + 2*im*cf*pi*T).*T.* (cos.(2*cf*pi*T) + sqrt(3 +
-      2^(3/2))*sin.(2*cf*pi*T))) ./ (-2 ./ exp.(2*B*T) -
-      2*exp.(4*im*cf*pi*T) + 2*(1 + exp.(4*im*cf*pi*T))./exp.(B*T)).^4)
+    gain = @. abs((-2*exp(4*im*cf*pi*T)*T + 2*exp(-(B*T) +
+      2*im*cf*pi*T)*T*(cos(2*cf*pi*T) - sqrt(3 - 2^(3/2))*
+      sin(2*cf*pi*T))) * (-2*exp(4*im*cf*pi*T)*T + 2*exp(-(B*T) +
+      2*im*cf*pi*T)*T* (cos(2*cf*pi*T) + sqrt(3 - 2^(3/2)) *
+      sin(2*cf*pi*T))) * (-2*exp(4*im*cf*pi*T)*T + 2*exp(-(B*T) +
+      2*im*cf*pi*T)*T* (cos(2*cf*pi*T) - sqrt(3 +
+      2^(3/2))*sin(2*cf*pi*T))) * (-2*exp.(4*im*cf*pi*T)*T +
+      2*exp(-(B*T) + 2*im*cf*pi*T)*T* (cos.(2*cf*pi*T) + sqrt(3 +
+      2^(3/2))*sin(2*cf*pi*T))) / (-2 ./ exp.(2*B*T) -
+      2*exp(4*im*cf*pi*T) + 2*(1 + exp(4*im*cf*pi*T))/exp(B*T))^4)
 
     C = typeof(B0)
-    filters = Array{SOSFilter{C,C}}(num_channels)
+    filters = Array{SOSFilter{C,C}}(uninitialized, num_channels)
     for ch=1:num_channels
-        biquads = Array{BiquadFilter{C}}(4)
+        biquads = Array{BiquadFilter{C}}(uninitialized, 4)
         biquads[1] = BiquadFilter(B0, B11[ch], B2, A0, A1[ch], A2[ch])
         biquads[2] = BiquadFilter(B0, B12[ch], B2, A0, A1[ch], A2[ch])
         biquads[3] = BiquadFilter(B0, B13[ch], B2, A0, A1[ch], A2[ch])

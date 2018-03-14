@@ -3,7 +3,7 @@
 # D. P. W. Ellis (2009). "Gammatone-like spectrograms", web resource.
 # http://www.ee.columbia.edu/~dpwe/resources/matlab/gammatonegram/
 
-type Gammatonegram{T, F<:Real} <: DSP.Periodograms.TFR{T}
+struct Gammatonegram{T, F<:Real} <: DSP.Periodograms.TFR{T}
     amplitude::Matrix{T}
     frequencies::Vector{F}
     time::StepRangeLen{Float64}
@@ -51,26 +51,26 @@ function fft2gammatonemx(nfft::Integer, sr::Integer, N::Integer, width, fmin, fm
                                                           cf*pi*T)./exp.(B*T))/2;
         zros = -[A11 A12 A13 A14]/T;
 
-        gain =  abs.((-2*exp.(4*im*cf*pi*T)*T +
-                    2*exp.(-(B*T) + 2*im*cf*pi*T).*T.*
-                    (cos.(2*cf*pi*T) - sqrt(3 - 2^(3/2))*
-                     sin.(2*cf*pi*T))) .*
-                   (-2*exp.(4*im*cf*pi*T)*T +
-                    2*exp.(-(B*T) + 2*im*cf*pi*T).*T.*
-                    (cos.(2*cf*pi*T) + sqrt(3 - 2^(3/2)) *
-                     sin.(2*cf*pi*T))).*
-                   (-2*exp.(4*im*cf*pi*T)*T +
-                    2*exp.(-(B*T) + 2*im*cf*pi*T).*T.*
-                    (cos.(2*cf*pi*T) -
-                     sqrt(3 + 2^(3/2))*sin.(2*cf*pi*T))) .*
-                   (-2*exp.(4*im*cf*pi*T)*T + 2*exp.(-(B*T) + 2*im*cf*pi*T).*T.*
-                    (cos.(2*cf*pi*T) + sqrt(3 + 2^(3/2))*sin.(2*cf*pi*T))) ./
-                   (-2 ./ exp.(2*B*T) - 2*exp.(4*im*cf*pi*T) +
-                    2*(1 + exp.(4*im*cf*pi*T))./exp.(B*T)).^4);
-        W[k,:] = ((T^4)/gain) *
-            abs.(ucirc-zros[1]).*abs.(ucirc-zros[2]) .*
-            abs.(ucirc-zros[3]).*abs.(ucirc-zros[4]) .*
-            (abs.((pole-ucirc).*(pole'-ucirc)).^-GTord);
+        gain = @. abs((-2*exp(4*im*cf*pi*T)*T +
+                    2*exp(-(B*T) + 2*im*cf*pi*T)*T*
+                    (cos(2*cf*pi*T) - sqrt(3 - 2^(3/2))*
+                     sin(2*cf*pi*T))) *
+                   (-2*exp(4*im*cf*pi*T)*T +
+                    2*exp(-(B*T) + 2*im*cf*pi*T)*T*
+                    (cos(2*cf*pi*T) + sqrt(3 - 2^(3/2)) *
+                     sin(2*cf*pi*T)))*
+                   (-2*exp(4*im*cf*pi*T)*T +
+                    2*exp(-(B*T) + 2*im*cf*pi*T)*T*
+                    (cos(2*cf*pi*T) -
+                     sqrt(3 + 2^(3/2))*sin(2*cf*pi*T))) *
+                   (-2*exp(4*im*cf*pi*T)*T + 2*exp(-(B*T) + 2*im*cf*pi*T)*T*
+                    (cos(2*cf*pi*T) + sqrt(3 + 2^(3/2))*sin(2*cf*pi*T))) /
+                   (-2 / exp.(2*B*T) - 2*exp.(4*im*cf*pi*T) +
+                    2*(1 + exp(4*im*cf*pi*T))/exp(B*T))^4);
+        W[k,:] = @. ((T^4)/gain) *
+            abs(ucirc-zros[1])*abs(ucirc-zros[2]) *
+            abs(ucirc-zros[3])*abs(ucirc-zros[4]) *
+            (abs((pole-ucirc)*(pole'-ucirc))^-GTord);
     end
-    W, cfreqs
+    return W, cfreqs
 end
