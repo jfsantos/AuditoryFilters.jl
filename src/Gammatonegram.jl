@@ -9,7 +9,7 @@ mutable struct Gammatonegram{T, F<:Real} <: DSP.Periodograms.TFR{T}
     time::StepRangeLen{Float64}
 end
 
-function gammatonegram(x,sr::Integer,twin::Real,thop::Real,N::Integer,fmin,fmax,width)
+function gammatonegram(x, sr::Integer, twin::Real, thop::Real, N::Integer, fmin, fmax, width)
     nfft = floor(Integer, 2^(ceil(log(2*twin*sr)/log(2))))
     nhop = round(Integer, thop*sr)
     nwin = round(Integer, twin*sr)
@@ -17,7 +17,7 @@ function gammatonegram(x,sr::Integer,twin::Real,thop::Real,N::Integer,fmin,fmax,
     # perform FFT and weighting in amplitude domain
     S = stft(x, nwin, nwin-nhop; nfft=nfft, fs=sr, window=hanning)
     Y = 1/nfft*W*abs.(S)
-    Gammatonegram(Y, Vector(vec(F)), ((0:size(Y,2).-1)*(nhop) .+ nwin/2)/sr)
+    Gammatonegram(Y, Vector(vec(F)), StepRangeLen(thop, thop, size(Y, 2)))
 end
 
 function fft2gammatonemx(nfft::Integer, sr::Integer, N::Integer, width, fmin, fmax)
