@@ -1,4 +1,4 @@
-immutable ModulationFilterbank{F<:FilterCoefficients,T<:Real,U<:Real} <: Filterbank
+struct ModulationFilterbank{F<:FilterCoefficients,T<:Real,U<:Real} <: Filterbank
     filters::Vector{F}
     center_frequencies::Vector{T}
     fs::U

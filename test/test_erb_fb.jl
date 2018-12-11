@@ -1,6 +1,7 @@
 # testing ERB filterbank design
+using DelimitedFiles
 fb = make_erb_filterbank(16000, 23, 150)
-fb_matlab = readcsv(open(joinpath(dirname(@__FILE__), "data", "ERB_filter_coeffs.csv")))
+fb_matlab = readdlm(open(joinpath(dirname(@__FILE__), "data", "ERB_filter_coeffs.csv")), ',')
 @test length(fb.filters) == size(fb_matlab, 1)
 for k=1:length(fb.filters)
 	sos = fb.filters[k]
@@ -23,5 +24,5 @@ end
 x = zeros(10000)
 x[1] = 1.0
 y = filt(fb, x)
-y_matlab = readcsv(open(joinpath(dirname(@__FILE__), "data", "ERB_filter_response.csv")))
+y_matlab = readdlm(open(joinpath(dirname(@__FILE__), "data", "ERB_filter_response.csv")), ',')
 @test y ≈ y_matlab'

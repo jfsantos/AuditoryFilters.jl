@@ -2,10 +2,15 @@ __precompile__()
 module AuditoryFilters
 
 using DSP
-import Base: convert, filt
+if VERSION >= v"0.7.0-DEV.602"
+    import ..DSP: filt, filt!
+else
+    import Base: filt, filt!
+end
+import Base: convert
 export erb_space, make_erb_filterbank, compute_modulation_cfs, make_modulation_filter,
        modulation_filterbank, gammatonegram, fft2gammatonemx,
-       ERBFilterbank, ModulationFilterbank
+       ERBFilterbank, ModulationFilterbank, filt
 
 abstract type Filterbank end
 
