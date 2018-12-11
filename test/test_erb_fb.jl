@@ -1,5 +1,5 @@
 # testing ERB filterbank design
-using DelimitedFiles
+using Compat.DelimitedFiles
 fb = make_erb_filterbank(16000, 23, 150)
 fb_matlab = readdlm(open(joinpath(dirname(@__FILE__), "data", "ERB_filter_coeffs.csv")), ',')
 @test length(fb.filters) == size(fb_matlab, 1)

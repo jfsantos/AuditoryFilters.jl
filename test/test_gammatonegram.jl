@@ -1,5 +1,5 @@
 # Testing gammatonegram response
-using DelimitedFiles
+using Compat.DelimitedFiles
 s = read!(open(joinpath(dirname(@__FILE__), "data", "sa2.raw")), Array{Float64}(undef,42701))
 fs = 16000
 (W, _) = AuditoryFilters.fft2gammatonemx(512, fs, 23, 1, 150, 4000)
