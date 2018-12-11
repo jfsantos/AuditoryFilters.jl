@@ -1,7 +1,7 @@
 __precompile__()
 module AuditoryFilters
 
-using DSP
+using DSP, Compat
 if VERSION >= v"0.7.0-DEV.602"
     import ..DSP: filt, filt!
 else
