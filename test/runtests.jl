@@ -1,4 +1,4 @@
-using AuditoryFilters, DSP, Test
+using AuditoryFilters, DSP, Compat.Test
 
 @testset "ERB Filterbank" begin
     include("test_erb_fb.jl")
