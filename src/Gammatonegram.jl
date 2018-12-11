@@ -29,7 +29,7 @@ function fft2gammatonemx(nfft::Integer, sr::Integer, N::Integer, width, fmin, fm
     order = 1
 
     cfreqs = -(EarQ*minBW) .+ exp.((1:N)'*(-log(fmax + EarQ*minBW) + log(fmin + EarQ*minBW))/N) * (fmax + EarQ*minBW);
-    cfreqs = reverse(cfreqs, dims=2)
+    cfreqs = Compat.reverse(cfreqs, dims=2)
     GTord = 4
     ucirc = exp.(2im*pi*(0:(nfft/2))/nfft)
     for k=1:N
